@@ -21,20 +21,36 @@ spec:
           args:
             - syncer
             - --elastic-search-addresses=http://elasticsearch.{{ .Values.namespace }}.svc:{{ .Values.elasticsearch.port }}
+          {{- if eq .Values.global.highAvailability.enableHighAvailability true }}
+            - --high-availability=true
+          {{- if and (eq .Values.global.highAvailability.enablePullMode true) (eq .Values.server.serviceType "LoadBalancer") }}
+            - --external-addresses=https://{{ .Values.server.externalEndpoint }}:{{ .Values.server.externalPort }}
+          {{- end }}
+          {{- end }}
           env:
             - name: KUBECONFIG
-              value: /etc/karpor/config
+              value: /etc/karpor/kubeconfig/config
           image: {{ include "karpor.realImage" (dict "context" . "repo" .Values.syncer.image.repo "tag" .Values.syncer.image.tag "needV" (not (hasPrefix "v" .Values.syncer.image.tag))) }}
           imagePullPolicy: {{ .Values.global.image.imagePullPolicy }} 
           name: karpor-syncer
           ports:
             - containerPort: {{ .Values.syncer.port }}
           volumeMounts:
-            - mountPath: /etc/karpor/
+            {{- if and (eq .Values.global.highAvailability.enableHighAvailability true) (eq .Values.global.highAvailability.enablePullMode true) }}
+            - mountPath: /etc/karpor/ca/
+              name: karpor-secret
+            {{- end }}
+            - mountPath: /etc/karpor/kubeconfig/
               name: karpor-kubeconfig
           resources:
             {{- toYaml .Values.syncer.resources | nindent 12 }}
       volumes:
+        {{- if and (eq .Values.global.highAvailability.enableHighAvailability true) (eq .Values.global.highAvailability.enablePullMode true) }}
         - name: karpor-kubeconfig
           configMap:
             name: karpor-kubeconfig
+        {{- end }}
+        - name: karpor-secret
+          secret:
+            defaultMode: 420
+            secretName: karpor-secret

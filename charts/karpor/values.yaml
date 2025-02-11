@@ -14,6 +14,10 @@ global:
   image:
     # -- Image pull policy to be applied to all Karpor components.
     imagePullPolicy: IfNotPresent
+  # -- HighAvailability feature gate
+  highAvailability:
+    enableHighAvailability: false
+    enablePullMode: false
 
 # Configuration for Karpor server
 server:
@@ -42,6 +46,8 @@ server:
   enableRbac: false
   # -- Service type for the karpor server. The available type values list as ["ClusterIP"、"NodePort"、"LoadBalancer"].
   serviceType: ClusterIP
+  externalEndpoint: ""
+  externalPort: ""
   # -- AI configuration section. The AI analysis feature requires that [authToken, baseUrl] be assigned values.
   ai:
     # -- Authentication token for accessing the AI service.

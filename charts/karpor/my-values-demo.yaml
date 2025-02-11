@@ -1,0 +1,39 @@
+# high availability && only push mode
+# Global configuration for Karpor components
+global:
+  # -- HighAvailability feature gate
+  highAvailability:
+    enableHighAvailability: true
+    enablePullMode: false
+
+# high availability && need pull mode && nodeport
+## Global configuration for Karpor components
+#global:
+#  image:
+#    # -- Image pull policy to be applied to all Karpor components.
+#    imagePullPolicy: IfNotPresent
+#  # -- HighAvailability feature gate
+#  highAvailability:
+#    enableHighAvailability: true
+#    enablePullMode: true
+#
+#server:
+#  externalEndpoint: "127.0.0.1"
+#  externalPort: "7443"
+#  serviceType: "NodePort"
+
+# high availability && need pull mode && loadbalancer
+## Global configuration for Karpor components
+#global:
+#  image:
+#    # -- Image pull policy to be applied to all Karpor components.
+#    imagePullPolicy: IfNotPresent
+#  # -- HighAvailability feature gate
+#  highAvailability:
+#    enableHighAvailability: true
+#    enablePullMode: true
+#
+#server:
+#  externalEndpoint: "127.0.0.1"
+#  externalPort: "7443"
+#  serviceType: "LoadBalancer"

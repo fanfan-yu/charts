@@ -1,3 +1,33 @@
+---
+{{- if and (eq .Values.global.highAvailability.enableHighAvailability true) (eq .Values.global.highAvailability.enablePullMode true) }}
+{{- if and (eq .Values.server.serviceType "LoadBalancer") }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: karpor-server
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - targetPort: {{ .Values.server.port }}
+      port: {{ .Values.server.externalPort }}
+  selector:
+    {{- include "karpor.selectorLabels" (dict "context" . "component" .Values.server.name) | nindent 4 }}
+  type: {{ .Values.server.serviceType }}
+  loadBalancerIP: {{ .Values.server.externalEndpoint }}
+{{- else }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: karpor-server
+  namespace: {{ .Values.namespace }}
+spec:
+  ports:
+    - port: {{ .Values.server.port }}
+  selector:
+    {{- include "karpor.selectorLabels" (dict "context" . "component" .Values.server.name) | nindent 4 }}
+  type: {{ .Values.server.serviceType }}
+{{- end }}
+{{- else }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -10,6 +40,7 @@ spec:
     {{- include "karpor.selectorLabels" (dict "context" . "component" .Values.server.name) | nindent 4 }}
   type: {{ .Values.server.serviceType }}
 ---
+{{- end }}
 {{- if .Values.server.ai.authToken }}
 apiVersion: v1
 kind: Secret
